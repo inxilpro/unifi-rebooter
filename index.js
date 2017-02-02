@@ -82,9 +82,9 @@ const tasks = new Listr([
 
         				checks++;
         				if (checks > 4) {
-        					task.title = 'It really does\'t help to stare...';
+        					task.title = `${name} (It really does't help to stare...)`;
         				} else if (checks > 2) {
-        					task.title = 'This may take 1-2 minutes...';
+        					task.title = `${name} (This may take 1-2 minutes...)`;
         				}
         			}, 15000);
         		});
