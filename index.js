@@ -2,7 +2,6 @@
 
 const unifi = require('node-unifi');
 const Listr = require('listr');
-const jsondiffpatch = require('jsondiffpatch');
 
 const argv = require('yargs')
     .usage('Usage: $0 -h [host] -u [username] -p [password]')
