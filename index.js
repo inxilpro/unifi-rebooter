@@ -4,7 +4,7 @@ const unifi = require('node-unifi');
 const Listr = require('listr');
 
 const argv = require('yargs')
-    .usage('Usage: $0 -h [host] -u [username] -p [password]')
+    .usage('Usage: $0 -u <username> -p <password> [-h <host>] [-P <port>] [-s <site>]')
     .alias('h', 'host')
     .default('h', '127.0.0.1')
     .alias('u', 'username')
@@ -26,8 +26,9 @@ const log = [];
 const controller = new unifi.Controller(host, port);
 const tasks = new Listr([
 	{
-        title: 'Logging in',
+        title: 'Log in',
         task: (ctx, task) => new Promise((resolve, reject) => {
+        	task.title = 'Logging in';
         	controller.login(username, password, err => {
         		if (err) {
         			return reject(err);
@@ -37,8 +38,9 @@ const tasks = new Listr([
         	});
         })
     }, {
-        title: 'Loading access points',
+        title: 'Load access points',
         task: (ctx, task) => new Promise((resolve, reject) => {
+        	task.title = 'Loading access points';
         	controller.getAccessDevices(site, (err, devices) => {
         		if (err) {
         			return reject(err);
@@ -49,8 +51,10 @@ const tasks = new Listr([
         	});
         })
     }, {
-        title: 'Rebooting access points',
+        title: 'Reboot access points',
         task: (ctx, task) => {
+        	task.title = 'Rebooting access points';
+
         	const getStatus = () => new Promise(resolve => {
         		controller.getAccessDevices(site, (err, devices) => {
 	        		if (err) {
@@ -82,7 +86,7 @@ const tasks = new Listr([
 
         				checks++;
         				if (checks > 4) {
-        					task.title = `${name} (It really does't help to stare...)`;
+        					task.title = `${name} (It really doesn't help to stare...)`;
         				} else if (checks > 2) {
         					task.title = `${name} (This may take 1-2 minutes...)`;
         				}
@@ -90,19 +94,30 @@ const tasks = new Listr([
         		});
         	});
 
-        	return new Listr(ctx.accessPoints.map(ap => ({
+        	const tasks = ctx.accessPoints.map(ap => ({
         		title: ap.name,
         		task: (ctx, task) => reboot(ap.mac, ap.name, task)
-        	})));
+        	}));
+
+        	tasks.push({
+        		title: '[Post-reboot clean up]',
+        		task: () => {
+        			task.title = `Rebooted ${ctx.accessPoints.length} access points`;
+        		}
+        	});
+
+        	// FIXME:
+        	const shortTasks = [tasks[0], tasks[tasks.length - 1]];
+        	return new Listr(shortTasks);
+
+        	return new Listr(tasks);
         }
     }
 ]);
 
 // Run
-tasks.run().then(() => {
-	console.log('Done');
-	process.exit(0);
-}).catch(e => {
+tasks.run().catch(e => {
+	console.error('Error:');
 	console.error(e);
 	process.exit(1);
 });
