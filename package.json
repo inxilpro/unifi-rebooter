@@ -1,0 +1,16 @@
+{
+  "name": "unifi-rebooter",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "listr": "^0.10.0",
+    "node-unifi": "^1.0.2",
+    "yargs": "^6.6.0"
+  }
+}
