@@ -4,14 +4,16 @@
   "description": "Simple script to reboot your Unifi access points.",
   "main": "index.js",
   "scripts": {
+    "start": "node index.js",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "author": "Chris Morrell",
   "license": "MIT",
   "dependencies": {
-    "listr": "^0.10.0",
+    "dotenv": "^4.0.0",
+    "listr": "^0.12.0",
     "node-unifi": "^1.0.2",
-    "yargs": "^6.6.0"
+    "yargs": "^8.0.2"
   },
   "engines": {
     "node": ">=7.0.0"
